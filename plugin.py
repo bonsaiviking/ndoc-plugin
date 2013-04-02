@@ -203,7 +203,7 @@ class Ndoc(callbacks.Plugin):
         stderr.close()
         nmap_proc.stdout_file.seek(0)
         result = ScriptHelpXMLContentHandler.parse_nmap_script_help(nmap_proc.stdout_file)
-        irc.replies(map(lambda f: reScript.search(f).group("fname"), result.script_filenames))
+        irc.replies(map(lambda f: reScript.search(f).group("fname"), result.script_filenames) or ["No scripts match"])
     expand = wrap(expand, ['text'])
 
 Class = Ndoc
