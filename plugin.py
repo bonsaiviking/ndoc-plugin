@@ -89,6 +89,7 @@ class Ndoc(callbacks.Plugin):
         self.__parent = super(Ndoc, self)
         self.__parent.__init__(irc)
         self.ndir = self.registryValue('nmapDir')
+        self.nbin = self.registryValue('nmapBin')
         self.meta = dict( (e.filename, e) for e in get_script_entries(
             os.path.join(self.ndir, 'scripts'),
             os.path.join(self.ndir, 'nselib') )
@@ -186,7 +187,7 @@ class Ndoc(callbacks.Plugin):
 
         Returns the list of scripts that <spec> will attempt to run."""
         ops = NmapOptions()
-        ops.executable = "/usr/local/bin/nmap"
+        ops.executable = self.nbin
         ops["--script-help"] = spec
         ops["-oX"] = "-"
         command_string = ops.render_string()
@@ -196,7 +197,6 @@ class Ndoc(callbacks.Plugin):
             nmap_proc.run_scan(stderr = stderr)
         except Exception, e:
             stderr.close()
-            raise e
             irc.reply("Failed to expand")
             return
         nmap_proc.command_process.wait()
