@@ -206,6 +206,33 @@ class Ndoc(callbacks.Plugin):
         irc.replies(map(lambda f: reScript.search(f).group("fname"), result.script_filenames) or ["No scripts match"])
     expand = wrap(expand, ['text'])
 
+    def opt(self, irc, msg, args, find):
+        """<find>
+
+        Searches Nmap's quick-help options summary for <find>."""
+        if len(find) < 2:
+            irc.reply("Search term must be at least 2 characters")
+            return
+        if find[0] == "-" and find[1] != "-": # "-X" and not "--long"
+            find = " %s" %(find) # avoid matching "--script" when "-s" asked for
+        ops = NmapOptions()
+        ops.executable = self.nbin
+        ops["--help"] = True
+        nmap_proc = NmapCommand(ops.render_string())
+        stderr = open("/dev/null", "w")
+        try:
+            nmap_proc.run_scan(stderr = stderr)
+        except Exception, e:
+            stderr.close()
+            irc.reply("Failed to run")
+            return
+        nmap_proc.command_process.wait()
+        stderr.close()
+        nmap_proc.stdout_file.seek(0)
+        for line in (filter(lambda l: l.find(find)!= -1, nmap_proc.stdout_file) or ["Nothing found"]):
+            irc.reply(line.rstrip())
+    opt = wrap(opt, ['text'])
+
 Class = Ndoc
 
 
