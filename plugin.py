@@ -110,6 +110,21 @@ class Ndoc(callbacks.Plugin):
             irc.reply("Bad input")
     author = wrap(author, ['anything'])
 
+    def url(self, irc, msg, args, script):
+        """<script>
+
+        Returns the url of a script"""
+        m = reScript.match(script) 
+        if m:
+            script = "%s.nse" %( m.group('fname') )
+            try:
+                irc.reply(self.meta[script].url)
+            except KeyError:
+                irc.reply("Script not found")
+        else:
+            irc.reply("Bad input")
+    url = wrap(url, ['anything'])
+
     def usage(self, irc, msg, args, script):
         """<script>
 
