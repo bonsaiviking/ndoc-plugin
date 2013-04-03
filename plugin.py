@@ -168,7 +168,7 @@ class Ndoc(callbacks.Plugin):
         if m:
             script = "%s.nse" %( m.group('fname') )
             try:
-                args = ( self.meta[script].arguments or ["No script arguments available"])
+                args = ( self.meta[script].arguments or [["No script arguments available"]])
             except KeyError:
                 irc.reply("Script not found")
                 return
