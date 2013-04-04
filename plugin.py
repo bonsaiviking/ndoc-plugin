@@ -41,6 +41,11 @@ from zenmapCore.NmapOptions import NmapOptions
 import re
 import os
 import xml.sax
+have_ndiff = True
+try:
+    from ndiff import Scan
+except ImportError:
+    have_ndiff = False
 
 ### Copied from Nmap 6.25 source: zenmap/zenmapGUI/ScriptInterface.py
 class ScriptHelpXMLContentHandler (xml.sax.handler.ContentHandler):
@@ -82,6 +87,8 @@ class ScriptHelpXMLContentHandler (xml.sax.handler.ContentHandler):
 ### END Copied from Nmap 6.25 source
 
 reScript = re.compile(r'(?P<fname>[\-a-z0-9]+)(?:.nse)?$')
+reLooseTarget = re.compile(r'^[a-zA-Z0-9\.:][-/,a-zA-Z0-9\.:]*$')
+reRange = re.compile(r'(?:-.*\d$|[/\*,]|-$)')
 
 class Ndoc(callbacks.Plugin):
     """Ask me about Nmap."""
@@ -247,6 +254,53 @@ class Ndoc(callbacks.Plugin):
         for line in (filter(lambda l: l.find(find)!= -1, nmap_proc.stdout_file) or ["Nothing found"]):
             irc.reply(line.rstrip())
     opt = wrap(opt, ['text'])
+
+    def whois(self, irc, msg, args, target):
+        """<target>
+
+        Returns the output of whois.nse for <target>."""
+        if not have_ndiff:
+            irc.reply("I couldn't load Ndiff, sorry.")
+            return
+        if not reLooseTarget.match(target) or reRange.search(target):
+            irc.reply("Single address only: No ranges or CIDR, sorry")
+            return
+        ops = NmapOptions()
+        ops.executable = self.nbin
+        ops["--script"] = "whois"
+        ops["-sn"] = True
+        ops["-Pn"] = True
+        ops["-oX"] = "-"
+        ops.target_specs = [target]
+        command_string = ops.render_string()
+        nmap_proc = NmapCommand(command_string)
+        stderr = open("/dev/null", "w")
+        try:
+            nmap_proc.run_scan(stderr = stderr)
+        except Exception, e:
+            stderr.close()
+            irc.reply("Failed to expand")
+            return
+        nmap_proc.command_process.wait()
+        stderr.close()
+        nmap_proc.stdout_file.seek(0)
+        scan = Scan()
+        scan.load(nmap_proc.stdout_file)
+        try:
+            host = scan.hosts[0]
+        except IndexError:
+            irc.reply("Sorry, could not run whois on that host")
+            return
+        sr = None
+        for r in host.script_results:
+            if r.id == "whois":
+                sr = r
+                break
+        if sr is None:
+            irc.reply( "%s: No output." % (host.format_name()) )
+            return
+        irc.replies([host.format_name()] + sr.output.split("\n"))
+    whois = wrap(whois, ['anything'])
 
 Class = Ndoc
 
