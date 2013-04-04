@@ -348,7 +348,7 @@ class Ndoc(callbacks.Plugin):
             irc.reply( "%s: No output." % (host.format_name()) )
             return
         irc.replies([host.format_name()] + sr.output.split("\n"))
-    address_info = wrap(address_info, ['anything'])
+    ipv6 = wrap(ipv6, ['anything'])
 
 Class = Ndoc
 
