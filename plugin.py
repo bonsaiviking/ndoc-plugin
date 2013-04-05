@@ -370,7 +370,7 @@ class Ndoc(callbacks.Plugin):
             irc.reply("No definition found.")
             return
         for t in self.tags.tags[tag]:
-            irc.reply("%s:%d: %s" %(t.file, t.line, t.text) )
+            irc.reply("%s:%s: %s" %(t.file, t.line, t.text) )
     define = wrap(define, ['anything'])
 
 Class = Ndoc
