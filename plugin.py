@@ -46,6 +46,11 @@ try:
     from ndiff import Scan
 except ImportError:
     have_ndiff = False
+have_pytags = True
+try:
+    from pytags.etags import EtagFile
+except ImportError:
+    have_pytags = False
 
 ### Copied from Nmap 6.25 source: zenmap/zenmapGUI/ScriptInterface.py
 class ScriptHelpXMLContentHandler (xml.sax.handler.ContentHandler):
@@ -97,10 +102,14 @@ class Ndoc(callbacks.Plugin):
         self.__parent.__init__(irc)
         self.ndir = self.registryValue('nmapDir')
         self.nbin = self.registryValue('nmapBin')
+        self.nsrc = self.registryValue('nmapSrc')
         self.meta = dict( (e.filename, e) for e in get_script_entries(
             os.path.join(self.ndir, 'scripts'),
             os.path.join(self.ndir, 'nselib') )
         )
+        if have_pytags:
+            self.tags = EtagFile()
+            self.tags.parse_from_file(os.path.join(self.nsrc, 'TAGS'))
 
     def author(self, irc, msg, args, script):
         """<script>
@@ -349,6 +358,20 @@ class Ndoc(callbacks.Plugin):
             return
         irc.replies([host.format_name()] + sr.output.split("\n"))
     ipv6 = wrap(ipv6, ['anything'])
+
+    def define(self, irc, msg, args, tag):
+        """<tag>
+
+        Returns a definition of <tag> from Nmap's source code, using etags."""
+        if not have_pytags:
+            irc.reply("I couldn't load pytags, sorry.")
+            return
+        if tag not in self.tags:
+            irc.reply("No definition found.")
+            return
+        for t in self.tags[tag]:
+            irc.reply("%s:%d: %s" %(t.file, t.line, t.text) )
+    define = wrap(define, ['anything'])
 
 Class = Ndoc
 
