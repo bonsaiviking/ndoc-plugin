@@ -43,9 +43,11 @@ def configure(advanced):
 Ndoc = conf.registerPlugin('Ndoc')
 # This is where your configuration variables (if any) should go.  For example:
 conf.registerGlobalValue(Ndoc, 'nmapDir',
-		registry.String('/usr/share/nmap', """The directory where Nmap keeps its data files."""))
+        registry.String('/usr/share/nmap', """The directory where Nmap keeps its data files."""))
 conf.registerGlobalValue(Ndoc, 'nmapBin',
-		registry.String('/usr/bin/nmap', """The fully-qualified path to the Nmap binary."""))
+        registry.String('/usr/bin/nmap', """The fully-qualified path to the Nmap binary."""))
+conf.registerGlobalValue(Ndoc, 'nmapSrc',
+        registry.String('/usr/src/nmap', """The fully-qualified path to the Nmap source code."""))
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
