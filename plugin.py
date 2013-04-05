@@ -279,7 +279,7 @@ class Ndoc(callbacks.Plugin):
             nmap_proc.run_scan(stderr = stderr)
         except Exception, e:
             stderr.close()
-            irc.reply("Failed to expand")
+            irc.reply("Sorry, could not run whois on that host")
             return
         nmap_proc.command_process.wait()
         stderr.close()
@@ -301,6 +301,54 @@ class Ndoc(callbacks.Plugin):
             return
         irc.replies([host.format_name()] + sr.output.split("\n"))
     whois = wrap(whois, ['anything'])
+
+    def ipv6(self, irc, msg, args, target):
+        """<target>
+
+        Returns the output of address-info.nse for <target>."""
+        if not have_ndiff:
+            irc.reply("I couldn't load Ndiff, sorry.")
+            return
+        if not reLooseTarget.match(target) or reRange.search(target):
+            irc.reply("Single address only: No ranges or CIDR, sorry")
+            return
+        ops = NmapOptions()
+        ops.executable = self.nbin
+        ops["-6"] = True
+        ops["--script"] = "address-info"
+        ops["-sn"] = True
+        ops["-Pn"] = True
+        ops["-oX"] = "-"
+        ops.target_specs = [target]
+        command_string = ops.render_string()
+        nmap_proc = NmapCommand(command_string)
+        stderr = open("/dev/null", "w")
+        try:
+            nmap_proc.run_scan(stderr = stderr)
+        except Exception, e:
+            stderr.close()
+            irc.reply("Sorry, could not run address-info on that host (not an IPv6 address?)")
+            return
+        nmap_proc.command_process.wait()
+        stderr.close()
+        nmap_proc.stdout_file.seek(0)
+        scan = Scan()
+        scan.load(nmap_proc.stdout_file)
+        try:
+            host = scan.hosts[0]
+        except IndexError:
+            irc.reply("Sorry, could not run address-info on that host (no AAAA record?)")
+            return
+        sr = None
+        for r in host.script_results:
+            if r.id == "address-info":
+                sr = r
+                break
+        if sr is None:
+            irc.reply( "%s: No output." % (host.format_name()) )
+            return
+        irc.replies([host.format_name()] + sr.output.split("\n"))
+    ipv6 = wrap(ipv6, ['anything'])
 
 Class = Ndoc
 
