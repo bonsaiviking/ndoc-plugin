@@ -366,10 +366,10 @@ class Ndoc(callbacks.Plugin):
         if not have_pytags:
             irc.reply("I couldn't load pytags, sorry.")
             return
-        if tag not in self.tags:
+        if tag not in self.tags.tags:
             irc.reply("No definition found.")
             return
-        for t in self.tags[tag]:
+        for t in self.tags.tags[tag]:
             irc.reply("%s:%d: %s" %(t.file, t.line, t.text) )
     define = wrap(define, ['anything'])
 
