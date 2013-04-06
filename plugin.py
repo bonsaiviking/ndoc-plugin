@@ -373,6 +373,24 @@ class Ndoc(callbacks.Plugin):
             irc.reply("%s:%s: %s" %(t.file, t.line, t.text) )
     define = wrap(define, ['anything'])
 
+    def service(self, iirc, msg, args, search):
+        """<search>
+
+        Returns the corresponding lines from nmap-services. <search> may be a service name, port, or port/protocol."""
+        svcfile = os.path.join(self.ndir, "nmap-services")
+        try:
+            f = open(svcfile, "r")
+        except:
+            irc.reply("Can't open nmap-services.")
+            return
+        reLine = None
+        if re.match(r'^\d+(?:/(?:sct|ud|tc)p)?$', search):
+            reLine = re.compile(r'^\S+\s*%s' %( re.escape(search) ))
+        else:
+            reLine = re.compile(r'^%s\s' %( re.escape(search) ))
+        for l in filter(lambda x: reLine.match(x), f):
+            irc.reply(l)
+    service = wrap(service, ['anything'])
 Class = Ndoc
 
 
