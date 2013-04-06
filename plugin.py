@@ -373,7 +373,7 @@ class Ndoc(callbacks.Plugin):
             irc.reply("%s:%s: %s" %(t.file, t.line, t.text) )
     define = wrap(define, ['anything'])
 
-    def service(self, iirc, msg, args, search):
+    def service(self, irc, msg, args, search):
         """<search>
 
         Returns the corresponding lines from nmap-services. <search> may be a service name, port, or port/protocol."""
