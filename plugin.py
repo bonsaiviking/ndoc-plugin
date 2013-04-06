@@ -389,7 +389,7 @@ class Ndoc(callbacks.Plugin):
         else:
             reLine = re.compile(r'^%s\s' %( re.escape(search) ))
         for l in filter(lambda x: reLine.match(x), f):
-            irc.reply(l)
+            irc.reply(l.rstrip())
     service = wrap(service, ['anything'])
 Class = Ndoc
 
