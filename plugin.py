@@ -385,7 +385,7 @@ class Ndoc(callbacks.Plugin):
             return
         reLine = None
         if re.match(r'^\d+(?:/(?:sct|ud|tc)p)?$', search):
-            reLine = re.compile(r'^\S+\s*%s' %( re.escape(search) ))
+            reLine = re.compile(r'^\S+\s*%s[\s/]' %( re.escape(search) ))
         else:
             reLine = re.compile(r'^%s\s' %( re.escape(search) ))
         for l in filter(lambda x: reLine.match(x), f):
