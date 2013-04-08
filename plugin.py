@@ -41,6 +41,8 @@ from zenmapCore.NmapOptions import NmapOptions
 import re
 import os
 import xml.sax
+from subprocess import Popen, PIPE
+
 have_ndiff = True
 try:
     from ndiff import Scan
@@ -94,6 +96,14 @@ class ScriptHelpXMLContentHandler (xml.sax.handler.ContentHandler):
 reScript = re.compile(r'(?P<fname>[\-a-z0-9]+)(?:.nse)?$')
 reLooseTarget = re.compile(r'^[a-zA-Z0-9\.:][-/,a-zA-Z0-9\.:]*$')
 reRange = re.compile(r'(?:-.*\d$|[/\*,]|-$)')
+reErr = re.compile(r'^(?P<file>[^:]+):(?P<line>\d+):(?P<text>.*)')
+reInteresting = re.compile(r'[^\s\d\-+\'\.:%cdfghilsux]')
+
+class Node():
+    def __init__(self):
+        self.file = None
+        self.line = None
+        self.text = None
 
 class Ndoc(callbacks.Plugin):
     """Ask me about Nmap."""
@@ -110,6 +120,22 @@ class Ndoc(callbacks.Plugin):
         if have_pytags:
             self.tags = EtagFile()
             self.tags.parse_from_file(os.path.join(self.nsrc, 'TAGS'))
+        findproc = Popen("find . -type f -name '*.c*' -print0 | xargs -0 grep -Hn -e 'fatal(' -e 'error('", cwd=self.ndir, shell=True, stdout=PIPE)
+        errs, _ = findproc.communicate()
+        self.errs = {}
+        for line in errs.splitlines():
+            m = reErr.match(line)
+            if m:
+                n = Node()
+                n.file = m.group('file')
+                n.line = m.group('line')
+                n.text = m.group('text')
+                for errstr in n.text.split('"')[1::2]: #simple string finder
+                    if len(errstr) > 8 and reInteresting.match(errstr):
+                        if errstr in self.errs:
+                            self.errs[errstr].append(n)
+                        else:
+                            self.errs[errstr] = [n]
 
     def author(self, irc, msg, args, script):
         """<script>
@@ -372,6 +398,24 @@ class Ndoc(callbacks.Plugin):
         for t in self.tags.tags[tag]:
             irc.reply("%s:%s: %s" %(t.file, t.line, t.text) )
     define = wrap(define, ['anything'])
+
+    def err(self, irc, msg, args, error):
+        """<error>
+
+        Returns up to 5 lines of Nmap source that could have generated an <error> message"""
+        if len(error) < 3:
+            irc.reply("Please search for something longer.")
+            return
+        limit = 5
+        for errstr in self.errs.keys():
+            if error in errstr:
+                for n in self.errs[errstr]:
+                    limit -= 1
+                    irc.reply("%s:%s: %s" %(n.file, n.line, n.text) )
+                    if limit <= 0:
+                        irc.reply("Limit break! Be more specific if you didn't find what you're looking for.")
+                        return
+    err = wrap(err, ['text'])
 
     def service(self, irc, msg, args, search):
         """<search>
