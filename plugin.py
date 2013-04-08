@@ -460,7 +460,7 @@ class Ndoc(callbacks.Plugin):
         """<search>
 
         Returns a link to a Google search for <search> in the nmap-dev mailing list."""
-        link = "https://encrypted.google.com/search?q="
+        link = "https://encrypted.google.com/search?"
         irc.reply(link + urllib.urlencode({ 'q': "site:seclists.org inurl:nmap-dev %s" %(search)}))
     devlist = wrap(devlist, ['text'])
 
