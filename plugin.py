@@ -42,6 +42,7 @@ import re
 import os
 import xml.sax
 from subprocess import Popen, PIPE
+import urllib
 
 have_ndiff = True
 try:
@@ -454,6 +455,14 @@ class Ndoc(callbacks.Plugin):
         for l in filter(lambda x: reLine.match(x), f):
             irc.reply(l.rstrip())
     proto = wrap(proto, ['anything'])
+
+    def devlist(self, irc, msg, args, search):
+        """<search>
+
+        Returns a link to a Google search for <search> in the nmap-dev mailing list."""
+        link = "https://encrypted.google.com/search?q="
+        irc.reply(link + urllib.urlencode({ 'q': "site:seclists.org inurl:nmap-dev %s" %(search)}))
+    devlist = wrap(devlist, ['text'])
 
 Class = Ndoc
 
