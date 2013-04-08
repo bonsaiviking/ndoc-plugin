@@ -120,7 +120,7 @@ class Ndoc(callbacks.Plugin):
         if have_pytags:
             self.tags = EtagFile()
             self.tags.parse_from_file(os.path.join(self.nsrc, 'TAGS'))
-        findproc = Popen("find %s -type f -name '*.c*' -print0 | xargs -0 grep -Hn -e 'fatal(' -e 'error('" %(self.nsrc), shell=True, stdout=PIPE)
+        findproc = Popen("find . -type f -name '*.c*' -print0 | xargs -0 grep -Hn -e 'fatal(' -e 'error('", cwd=self.ndir, shell=True, stdout=PIPE)
         errs, _ = findproc.communicate()
         self.errs = {}
         for line in errs.splitlines():
@@ -130,7 +130,7 @@ class Ndoc(callbacks.Plugin):
                 n.file = m.group('file')
                 n.line = m.group('line')
                 n.text = m.group('text')
-                for errstr in n.line.split('"')[1::2]: #simple string finder
+                for errstr in n.text.split('"')[1::2]: #simple string finder
                     if len(errstr) > 8 and reInteresting.match(errstr):
                         if errstr in self.errs:
                             self.errs[errstr].append(n)
