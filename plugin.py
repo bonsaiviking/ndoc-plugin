@@ -408,8 +408,8 @@ class Ndoc(callbacks.Plugin):
             return
         for errstr in self.errs.keys():
             if re.search(r'%s' %( re.escape(error) ), errstr):
-                n = self.errs[errstr]
-                irc.reply("%s:%s: %s" %(n.file, n.line, n.text) )
+                for n in self.errs[errstr]:
+                    irc.reply("%s:%s: %s" %(n.file, n.line, n.text) )
     err = wrap(err, ['text'])
 
     def service(self, irc, msg, args, search):
