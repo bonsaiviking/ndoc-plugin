@@ -402,14 +402,19 @@ class Ndoc(callbacks.Plugin):
     def err(self, irc, msg, args, error):
         """<error>
 
-        Returns a line of Nmap source that could have generated an <error> message"""
+        Returns up to 5 lines of Nmap source that could have generated an <error> message"""
         if len(error) < 3:
             irc.reply("Please search for something longer.")
             return
+        limit = 5
         for errstr in self.errs.keys():
-            if re.search(r'%s' %( re.escape(error) ), errstr):
+            if error in errstr:
                 for n in self.errs[errstr]:
+                    limit -= 1
                     irc.reply("%s:%s: %s" %(n.file, n.line, n.text) )
+                    if limit <= 0:
+                        irc.reply("Limit break! Be more specific if you didn't find what you're looking for.")
+                        return
     err = wrap(err, ['text'])
 
     def service(self, irc, msg, args, search):
