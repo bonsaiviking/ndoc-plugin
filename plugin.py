@@ -121,7 +121,7 @@ class Ndoc(callbacks.Plugin):
         if have_pytags:
             self.tags = EtagFile()
             self.tags.parse_from_file(os.path.join(self.nsrc, 'TAGS'))
-        findproc = Popen("find . -type f -name '*.c*' -print0 | xargs -0 grep -Hn -e 'fatal(' -e 'error('", cwd=self.ndir, shell=True, stdout=PIPE)
+        findproc = Popen("find . -type f -name '*.c*' -print0 | xargs -0 grep -Hn -e 'fatal(' -e 'error(' -e 'warning('", cwd=self.ndir, shell=True, stdout=PIPE)
         errs, _ = findproc.communicate()
         self.errs = {}
         for line in errs.splitlines():
@@ -463,6 +463,18 @@ class Ndoc(callbacks.Plugin):
         link = "https://encrypted.google.com/search?"
         irc.reply(link + urllib.urlencode({ 'q': "site:seclists.org inurl:nmap-dev %s" %(search)}))
     devlist = wrap(devlist, ['text'])
+
+    def libdoc(self, irc, msg, args, library):
+        """<library>
+
+        Returns a link to the NSEdoc page for <library>. If <library> is libname.method, then the link will go directly to the definition of method."""
+        m = re.match(r'(?P<libname>\w+)(?:\.(?P<method>\w+)[\(\)]{0,2})?$', library)
+        if m:
+            link = "http://nmap.org/nsedoc/lib/%s.html#%s" %(m.group('libname'), m.group('method') or '')
+            irc.reply( link.lower() )
+        else:
+            irc.reply("Invalid input")
+    libdoc = wrap(libdoc, ['something'])
 
 Class = Ndoc
 
