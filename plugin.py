@@ -468,9 +468,9 @@ class Ndoc(callbacks.Plugin):
         """<library>
 
         Returns a link to the NSEdoc page for <library>. If <library> is libname.method, then the link will go directly to the definition of method."""
-        m = re.match(r'(?P<libname>\w+)\.?(?P<method>\w+)?$', library)
+        m = re.match(r'(?P<libname>\w+)(?:\.(?P<method>\w+)[\(\)]{0,2})?$', library)
         if m:
-            link = "http://nmap.org/nsedoc/lib/%s.html#%s" %(m.group('libname'), m.group('method'))
+            link = "http://nmap.org/nsedoc/lib/%s.html#%s" %(m.group('libname'), m.group('method') or '')
             irc.reply( link.lower() )
         else:
             irc.reply("Invalid input")
