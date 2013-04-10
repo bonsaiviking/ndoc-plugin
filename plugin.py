@@ -464,6 +464,18 @@ class Ndoc(callbacks.Plugin):
         irc.reply(link + urllib.urlencode({ 'q': "site:seclists.org inurl:nmap-dev %s" %(search)}))
     devlist = wrap(devlist, ['text'])
 
+    def libdoc(self, irc, msg, args, library):
+        """<library>
+
+        Returns a link to the NSEdoc page for <library>. If <library> is libname.method, then the link will go directly to the definition of method."""
+        m = re.match(r'(?P<libname>\w+)\.?(?P<method>\w+)?$', library)
+        if m:
+            link = "http://nmap.org/nsedoc/lib/%s.html#%s" %(m.group('libname'), m.group('method'))
+            irc.reply( link.lower() )
+        else:
+            irc.reply("Invalid input")
+    libdoc = wrap(libdoc, ['something'])
+
 Class = Ndoc
 
 
