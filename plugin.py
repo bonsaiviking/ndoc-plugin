@@ -119,7 +119,7 @@ class Ndoc(callbacks.Plugin):
             os.path.join(self.ndir, 'scripts'),
             os.path.join(self.ndir, 'nselib') )
         )
-        self.libs = glob.glob(os.path.join(self.ndir, 'nselib', '*.lua*'))
+        self.libs = map(lambda x: os.path.basename(x).split('.')[0], glob.glob(os.path.join(self.ndir, 'nselib', '*.lua*')))
         if have_pytags:
             self.tags = EtagFile()
             self.tags.parse_from_file(os.path.join(self.nsrc, 'TAGS'))
