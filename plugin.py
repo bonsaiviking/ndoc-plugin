@@ -162,10 +162,10 @@ class Ndoc(callbacks.Plugin):
         irc.replies(self.libs)
     liblist = wrap(liblist, [])
 
-    def url(self, irc, msg, args, script):
-        """<script>
+    def url(self, irc, msg, args, name):
+        """<name>
 
-        Returns the url of a script, library, or library function"""
+        Returns a link to the NSEdoc page for <name>. <name> can be a script, library, or library.method."""
         m = re.match(r'(?P<libname>\w+)(?:\.(?P<method>\w+)[\(\)]{0,2})?$', script)
         if m and m.group('libname') in self.libs:
             link = "http://nmap.org/nsedoc/lib/%s.html#%s" %(m.group('libname'), m.group('method') or '')
@@ -477,18 +477,6 @@ class Ndoc(callbacks.Plugin):
         link = "https://encrypted.google.com/search?"
         irc.reply(link + urllib.urlencode({ 'q': "site:seclists.org inurl:nmap-dev %s" %(search)}))
     devlist = wrap(devlist, ['text'])
-
-    def libdoc(self, irc, msg, args, library):
-        """<library>
-
-        Returns a link to the NSEdoc page for <library>. If <library> is libname.method, then the link will go directly to the definition of method."""
-        m = re.match(r'(?P<libname>\w+)(?:\.(?P<method>\w+)[\(\)]{0,2})?$', library)
-        if m:
-            link = "http://nmap.org/nsedoc/lib/%s.html#%s" %(m.group('libname'), m.group('method') or '')
-            irc.reply( link.lower() )
-        else:
-            irc.reply("Invalid input")
-    libdoc = wrap(libdoc, ['something'])
 
 Class = Ndoc
 
