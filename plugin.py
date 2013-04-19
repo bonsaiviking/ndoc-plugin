@@ -160,7 +160,7 @@ class Ndoc(callbacks.Plugin):
 
         Returns the list of NSE libraries."""
         irc.replies(self.libs)
-    libs = wrap(libs, [])
+    libs = wrap(libs, ['anything'])
 
     def url(self, irc, msg, args, script):
         """<script>
