@@ -159,7 +159,7 @@ class Ndoc(callbacks.Plugin):
         """<script>
 
         Returns the url of a script, library, or library function"""
-        m = re.match(r'(?P<libname>\w+)(?:\.(?P<method>\w+)[\(\)]{0,2})?$', library)
+        m = re.match(r'(?P<libname>\w+)(?:\.(?P<method>\w+)[\(\)]{0,2})?$', script)
         if m and m.group('libname') in self.libs:
             link = "http://nmap.org/nsedoc/lib/%s.html#%s" %(m.group('libname'), m.group('method') or '')
             irc.reply( link.lower() )
