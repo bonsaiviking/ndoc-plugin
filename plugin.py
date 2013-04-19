@@ -43,6 +43,7 @@ import os
 import xml.sax
 from subprocess import Popen, PIPE
 import urllib
+import glob
 
 have_ndiff = True
 try:
@@ -118,6 +119,7 @@ class Ndoc(callbacks.Plugin):
             os.path.join(self.ndir, 'scripts'),
             os.path.join(self.ndir, 'nselib') )
         )
+        self.libs = glob.glob(os.path.join(self.ndir, 'nselib', '*.lua*'))
         if have_pytags:
             self.tags = EtagFile()
             self.tags.parse_from_file(os.path.join(self.nsrc, 'TAGS'))
@@ -156,16 +158,21 @@ class Ndoc(callbacks.Plugin):
     def url(self, irc, msg, args, script):
         """<script>
 
-        Returns the url of a script"""
-        m = reScript.match(script) 
-        if m:
-            script = "%s.nse" %( m.group('fname') )
-            try:
-                irc.reply(self.meta[script].url)
-            except KeyError:
-                irc.reply("Script not found")
+        Returns the url of a script, library, or library function"""
+        m = re.match(r'(?P<libname>\w+)(?:\.(?P<method>\w+)[\(\)]{0,2})?$', library)
+        if m and m.group('libname') in self.libs:
+            link = "http://nmap.org/nsedoc/lib/%s.html#%s" %(m.group('libname'), m.group('method') or '')
+            irc.reply( link.lower() )
         else:
-            irc.reply("Bad input")
+            m = reScript.match(script)
+            if m:
+                script = "%s.nse" %( m.group('fname') )
+                try:
+                    irc.reply(self.meta[script].url)
+                except KeyError:
+                    irc.reply("Script not found")
+            else:
+                irc.reply("Bad input")
     url = wrap(url, ['anything'])
 
     def usage(self, irc, msg, args, script):
