@@ -155,6 +155,13 @@ class Ndoc(callbacks.Plugin):
             irc.reply("Bad input")
     author = wrap(author, ['anything'])
 
+    def libs(self, irc, msg, args):
+        """
+
+        Returns the list of NSE libraries."""
+        irc.replies(self.libs)
+    libs = wrap(libs, [])
+
     def url(self, irc, msg, args, script):
         """<script>
 
