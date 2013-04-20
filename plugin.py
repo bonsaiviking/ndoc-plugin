@@ -166,12 +166,12 @@ class Ndoc(callbacks.Plugin):
         """<name>
 
         Returns a link to the NSEdoc page for <name>. <name> can be a script, library, or library.method."""
-        m = re.match(r'(?P<libname>\w+)(?:\.(?P<method>\w+)[\(\)]{0,2})?$', script)
+        m = re.match(r'(?P<libname>\w+)(?:\.(?P<method>\w+)[\(\)]{0,2})?$', name)
         if m and m.group('libname') in self.libs:
             link = "http://nmap.org/nsedoc/lib/%s.html#%s" %(m.group('libname'), m.group('method') or '')
             irc.reply( link.lower() )
         else:
-            m = reScript.match(script)
+            m = reScript.match(name)
             if m:
                 script = "%s.nse" %( m.group('fname') )
                 try:
