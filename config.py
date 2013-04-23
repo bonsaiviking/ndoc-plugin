@@ -48,6 +48,8 @@ conf.registerGlobalValue(Ndoc, 'nmapBin',
         registry.String('/usr/bin/nmap', """The fully-qualified path to the Nmap binary."""))
 conf.registerGlobalValue(Ndoc, 'nmapSrc',
         registry.String('/usr/src/nmap', """The fully-qualified path to the Nmap source code."""))
+conf.registerGlobalValue(Ndoc, 'luaManualTerms',
+        registry.String('/usr/share/doc/lua5.2-doc/lua.terms', """The fully-qualified path to a list of anchor names for the Lua manual."""))
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
