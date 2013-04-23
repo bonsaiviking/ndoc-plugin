@@ -44,6 +44,7 @@ import xml.sax
 from subprocess import Popen, PIPE
 import urllib
 import glob
+import string
 
 have_ndiff = True
 try:
@@ -142,7 +143,7 @@ class Ndoc(callbacks.Plugin):
         #TODO: try-catch
         luaman = open(self.registryValue('luaManualTerms'),"r")
         self.luaterms = {}
-        for term in luaman:
+        for term in map(string.strip, luaman):
             t = term.split("-")
             if t[0] == "pdf":
                 self.luaterms[t[1]] = term
