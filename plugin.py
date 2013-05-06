@@ -257,7 +257,11 @@ class Ndoc(callbacks.Plugin):
         """<script> [<arg>]
 
         Returns the --script-args that a script accepts. With <arg>, returns the description of <arg>."""
-        m = reScript.match(script) 
+        m = reScript.match(script)
+        if not m and "." in script and not arg:
+            arg = script
+            script = script.split(".")[0]
+            m = reScript.match(script)
         if m:
             script = "%s.nse" %( m.group('fname') )
             try:
