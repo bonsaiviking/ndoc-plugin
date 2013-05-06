@@ -44,6 +44,7 @@ import xml.sax
 from subprocess import Popen, PIPE
 import urllib
 import glob
+import string
 
 have_ndiff = True
 try:
@@ -139,6 +140,26 @@ class Ndoc(callbacks.Plugin):
                             self.errs[errstr].append(n)
                         else:
                             self.errs[errstr] = [n]
+        #TODO: try-catch
+        luaman = open(self.registryValue('luaManualTerms'),"r")
+        self.luaterms = {}
+        for term in map(string.strip, luaman):
+            t = term.split("-")
+            if t[0] == "pdf":
+                self.luaterms[t[1]] = term
+            else:
+                self.luaterms[term] = term
+        luaman.close()
+
+    def luaterm(self, irc, msg, args, term):
+        """<term>
+
+        Returns a link to the Lua 5.2 manual section for <term>."""
+        if term in self.luaterms:
+            irc.reply("http://www.lua.org/manual/5.2/manual.html#{0}".format(self.luaterms[term]))
+        else:
+            irc.reply("No such term in Lua 5.2 manual: http://www.lua.org/manual/5.2/manual.html")
+    luaterm = wrap(luaterm, ['anything'])
 
     def author(self, irc, msg, args, script):
         """<script>
@@ -236,7 +257,11 @@ class Ndoc(callbacks.Plugin):
         """<script> [<arg>]
 
         Returns the --script-args that a script accepts. With <arg>, returns the description of <arg>."""
-        m = reScript.match(script) 
+        m = reScript.match(script)
+        if not m and "." in script and not arg:
+            arg = script
+            script = script.split(".")[0]
+            m = reScript.match(script)
         if m:
             script = "%s.nse" %( m.group('fname') )
             try:
