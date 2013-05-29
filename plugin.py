@@ -346,6 +346,8 @@ class Ndoc(callbacks.Plugin):
         ops["-sn"] = True
         ops["-Pn"] = True
         ops["-oX"] = "-"
+        if ":" in target:
+            ops["-6"] = True
         ops.target_specs = [target]
         command_string = ops.render_string()
         nmap_proc = NmapCommand(command_string)
