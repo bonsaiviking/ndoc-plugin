@@ -124,7 +124,7 @@ class Ndoc(callbacks.Plugin):
         if have_pytags:
             self.tags = EtagFile()
             self.tags.parse_from_file(os.path.join(self.nsrc, 'TAGS'))
-        findproc = Popen("find . -type f -name '*.c*' -print0 | xargs -0 grep -Hn -e 'fatal(' -e 'error(' -e 'warning('", cwd=self.ndir, shell=True, stdout=PIPE)
+        findproc = Popen("find . -type f -name '*.c*' -print0 | xargs -0 grep -Hn -e 'fatal(' -e 'error(' -e 'warning(' -e 'fprintf( *stderr'", cwd=self.ndir, shell=True, stdout=PIPE)
         errs, _ = findproc.communicate()
         self.errs = {}
         for line in errs.splitlines():
