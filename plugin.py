@@ -342,7 +342,7 @@ class Ndoc(callbacks.Plugin):
             return
         ops = NmapOptions()
         ops.executable = self.nbin
-        ops["--script"] = "whois-ip and whois-domain"
+        ops["--script"] = "whois-ip,whois-domain"
         ops["-sn"] = True
         ops["-Pn"] = True
         ops["-oX"] = "-"
