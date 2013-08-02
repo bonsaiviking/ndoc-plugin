@@ -333,7 +333,7 @@ class Ndoc(callbacks.Plugin):
     def whois(self, irc, msg, args, target):
         """<target>
 
-        Returns the output of whois-ip and whois-domain for <target>."""
+        Returns the output of whois-ip for <target>."""
         if not have_ndiff:
             irc.reply("I couldn't load Ndiff, sorry.")
             return
@@ -342,7 +342,7 @@ class Ndoc(callbacks.Plugin):
             return
         ops = NmapOptions()
         ops.executable = self.nbin
-        ops["--script"] = "whois-ip,whois-domain"
+        ops["--script"] = "whois-ip"
         ops["-sn"] = True
         ops["-Pn"] = True
         ops["-oX"] = "-"
@@ -373,9 +373,10 @@ class Ndoc(callbacks.Plugin):
             if r.id == "whois-ip":
                 sr = r
                 irc.replies([host.get_id()] + sr.output.split("\n"))
-            elif r.id == "whois-domain":
-                sr = r
-                irc.replies([host.format_name()] + sr.output.split("\n"))
+                break
+            #elif r.id == "whois-domain":
+            #    sr = r
+            #    irc.replies([host.format_name()] + sr.output.split("\n"))
         if sr is None:
             irc.reply( "%s: No output." % (host.format_name()) )
             return
