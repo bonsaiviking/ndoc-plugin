@@ -161,6 +161,21 @@ class Ndoc(callbacks.Plugin):
             irc.reply("No such term in Lua 5.2 manual: http://www.lua.org/manual/5.2/manual.html")
     luaterm = wrap(luaterm, ['anything'])
 
+    def description(self, irc, msg, args, script):
+        """<script>
+
+        Returns the description of a script"""
+        m = reScript.match(script) 
+        if m:
+            script = "%s.nse" %( m.group('fname') )
+            try:
+                irc.reply(self.meta[script].description.replace("\n"," "))
+            except KeyError:
+                irc.reply("Script not found")
+        else:
+            irc.reply("Bad input")
+    description = wrap(description, ['anything'])
+
     def author(self, irc, msg, args, script):
         """<script>
 
