@@ -522,8 +522,8 @@ class Ndoc(callbacks.Plugin):
         link = "https://encrypted.google.com/search?"
         irc.reply(link + urllib.urlencode({ 'q': "site:seclists.org inurl:nmap-dev %s" %(search)}))
     devlist = wrap(devlist, ['text'])
-    
-    def nsestats(self, irc, msg, args, search):
+
+    def nsestats(self, irc, msg, args):
         """
 
         Returns some stats about the Nmap Scripting Engine"""
@@ -538,7 +538,7 @@ class Ndoc(callbacks.Plugin):
             for script in self.meta:
                 uniq[script.author] = 1
             return len(uniq)
-            
+
         stats = "{ns} scripts in {nc} categories by {na} authors. {nl} libraries.".format(
                 ns=len(self.meta),
                 nc=count_cat(),
