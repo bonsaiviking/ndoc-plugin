@@ -527,22 +527,17 @@ class Ndoc(callbacks.Plugin):
         """
 
         Returns some stats about the Nmap Scripting Engine"""
-        def count_cat():
-            uniq = {}
-            for script in self.meta:
-                for cat in script.categories:
-                    uniq[cat] = 1
-            return len(uniq)
-        def count_author():
-            uniq = {}
-            for script in self.meta:
-                uniq[script.author] = 1
-            return len(uniq)
+        uniq_cat = {}
+        uniq_author = {}
+        for script in self.meta.itervalues():
+            uniq_author[script.author] = 1
+            for cat in script.categories:
+                uniq_cat[cat] = 1
 
         stats = "{ns} scripts in {nc} categories by {na} authors. {nl} libraries.".format(
                 ns=len(self.meta),
-                nc=count_cat(),
-                na=count_author(),
+                nc=len(uniq_cat),
+                na=len(uniq_author),
                 nl=len(self.libs),
                 )
         irc.reply(stats)
