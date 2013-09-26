@@ -127,7 +127,7 @@ class Ndoc(callbacks.Plugin):
         findproc = Popen("find . -type f -name '*.c*' -print0 | xargs -0 egrep -Hn " +
                 "-e '(fatal|error) *\(' " +
                 "-e 'warn(ing)? *\(' " +
-                "-e 'fprintf *( *stderr' " +
+                "-e 'fprintf *\( *stderr' " +
                 "-e '\<(die|bye|loguser|report|printf) *\(' ", cwd=self.ndir, shell=True, stdout=PIPE)
         errs, _ = findproc.communicate()
         self.errs = {}
