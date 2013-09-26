@@ -124,11 +124,11 @@ class Ndoc(callbacks.Plugin):
         if have_pytags:
             self.tags = EtagFile()
             self.tags.parse_from_file(os.path.join(self.nsrc, 'TAGS'))
-        findproc = Popen("find . -type f -name '*.c*' -print0 | xargs -0 egrep -Hn " +
-                "-e '(fatal|error) *\(' " +
-                "-e 'warn(ing)? *\(' " +
-                "-e 'fprintf *\( *stderr' " +
-                "-e '\<(die|bye|loguser|report|printf) *\(' ", cwd=self.ndir, shell=True, stdout=PIPE)
+        findproc = Popen("find . -type f \\( -name '*.c' -o -name '*.cc' -o -name '*.h' \\) -print0 | xargs -0 egrep -Hn " +
+                "-e '(fatal|error) *\\(' " +
+                "-e 'warn(ing)? *\\(' " +
+                "-e 'fprintf *\\( *stderr' " +
+                "-e '\\<(die|bye|loguser|report|printf) *\\(' ", cwd=self.ndir, shell=True, stdout=PIPE)
         errs, _ = findproc.communicate()
         self.errs = {}
         for line in errs.splitlines():
