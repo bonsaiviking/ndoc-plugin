@@ -45,6 +45,7 @@ from subprocess import Popen, PIPE
 import urllib
 import glob
 import string
+from datetime import datetime
 
 have_ndiff = True
 try:
@@ -154,6 +155,9 @@ class Ndoc(callbacks.Plugin):
             else:
                 self.luaterms[term] = term
         luaman.close()
+        svnproc = Popen("svn info | awk '$1==\"Revision:\"{print $2}'", cwd=self.nsrc, shell=True, stdout=PIPE)
+        self.svnrev, _ = svnproc.communicate()
+        self.lastload = datetime.utcnow()
 
     def luaterm(self, irc, msg, args, term):
         """<term>
@@ -546,6 +550,13 @@ class Ndoc(callbacks.Plugin):
                 )
         irc.reply(stats)
     nsestats = wrap(nsestats, [])
+
+    def rev(self, irc, msg, args):
+        """
+
+        Return the current SVN revision that Ndoc has loaded"""
+        irc.reply("I updated to r{} at {} UTC".format(self.svnrev, self.lastload))
+    rev = wrap(rev, [])
 
 Class = Ndoc
 
