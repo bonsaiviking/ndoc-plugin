@@ -157,6 +157,7 @@ class Ndoc(callbacks.Plugin):
         luaman.close()
         svnproc = Popen("svn info | awk '$1==\"Revision:\"{print $2}'", cwd=self.nsrc, shell=True, stdout=PIPE)
         self.svnrev, _ = svnproc.communicate()
+        self.svnrev = self.svnrev.strip()
         self.lastload = datetime.utcnow()
 
     def luaterm(self, irc, msg, args, term):
