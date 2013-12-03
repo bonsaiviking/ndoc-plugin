@@ -35,9 +35,7 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 import supybot.log as log
 
-from zenmapCore.ScriptMetadata import ScriptMetadata, get_script_entries
-from zenmapCore.NmapCommand import NmapCommand
-from zenmapCore.NmapOptions import NmapOptions
+import sys
 import re
 import os
 import xml.sax
@@ -117,6 +115,10 @@ class Ndoc(callbacks.Plugin):
         self.ndir = self.registryValue('nmapDir')
         self.nbin = self.registryValue('nmapBin')
         self.nsrc = self.registryValue('nmapSrc')
+        sys.path.append(os.path.join(self.nsrc, 'zenmap'))
+        from zenmapCore.ScriptMetadata import ScriptMetadata, get_script_entries
+        from zenmapCore.NmapCommand import NmapCommand
+        from zenmapCore.NmapOptions import NmapOptions
         self.meta = dict( (e.filename, e) for e in get_script_entries(
             os.path.join(self.ndir, 'scripts'),
             os.path.join(self.ndir, 'nselib') )
