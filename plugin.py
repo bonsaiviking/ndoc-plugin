@@ -119,6 +119,9 @@ class Ndoc(callbacks.Plugin):
         from zenmapCore.ScriptMetadata import ScriptMetadata, get_script_entries
         from zenmapCore.NmapCommand import NmapCommand
         from zenmapCore.NmapOptions import NmapOptions
+        from zenmapCore.UmitConf import PathsConfig
+        paths = PathsConfig()
+        paths.set_nmap_command_path(self.nbin)
         self.meta = dict( (e.filename, e) for e in get_script_entries(
             os.path.join(self.ndir, 'scripts'),
             os.path.join(self.ndir, 'nselib') )
@@ -309,12 +312,12 @@ class Ndoc(callbacks.Plugin):
         """<spec>
 
         Returns the list of scripts that <spec> will attempt to run."""
-        ops = NmapOptions()
+        ops = self.NmapOptions()
         ops.executable = self.nbin
         ops["--script-help"] = spec
         ops["-oX"] = "-"
         command_string = ops.render_string()
-        nmap_proc = NmapCommand(command_string)
+        nmap_proc = self.NmapCommand(command_string)
         stderr = open("/dev/null", "w")
         try:
             nmap_proc.run_scan(stderr = stderr)
@@ -338,10 +341,10 @@ class Ndoc(callbacks.Plugin):
             return
         if find[0] == "-" and find[1] != "-": # "-X" and not "--long"
             find = " %s" %(find) # avoid matching "--script" when "-s" asked for
-        ops = NmapOptions()
+        ops = self.NmapOptions()
         ops.executable = self.nbin
         ops["--help"] = True
-        nmap_proc = NmapCommand(ops.render_string())
+        nmap_proc = self.NmapCommand(ops.render_string())
         stderr = open("/dev/null", "w")
         try:
             nmap_proc.run_scan(stderr = stderr)
@@ -366,7 +369,7 @@ class Ndoc(callbacks.Plugin):
         if not reLooseTarget.match(target) or reRange.search(target):
             irc.reply("Single address only: No ranges or CIDR, sorry")
             return
-        ops = NmapOptions()
+        ops = self.NmapOptions()
         ops.executable = self.nbin
         ops["--script"] = "whois-ip"
         ops["-sn"] = True
@@ -376,7 +379,7 @@ class Ndoc(callbacks.Plugin):
             ops["-6"] = True
         ops.target_specs = [target]
         command_string = ops.render_string()
-        nmap_proc = NmapCommand(command_string)
+        nmap_proc = self.NmapCommand(command_string)
         stderr = open("/dev/null", "w")
         try:
             nmap_proc.run_scan(stderr = stderr)
@@ -418,7 +421,7 @@ class Ndoc(callbacks.Plugin):
         if not reLooseTarget.match(target) or reRange.search(target):
             irc.reply("Single address only: No ranges or CIDR, sorry")
             return
-        ops = NmapOptions()
+        ops = self.NmapOptions()
         ops.executable = self.nbin
         ops["-6"] = True
         ops["--script"] = "address-info"
@@ -427,7 +430,7 @@ class Ndoc(callbacks.Plugin):
         ops["-oX"] = "-"
         ops.target_specs = [target]
         command_string = ops.render_string()
-        nmap_proc = NmapCommand(command_string)
+        nmap_proc = self.NmapCommand(command_string)
         stderr = open("/dev/null", "w")
         try:
             nmap_proc.run_scan(stderr = stderr)
