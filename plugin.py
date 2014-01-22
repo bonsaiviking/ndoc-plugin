@@ -45,11 +45,6 @@ import glob
 import string
 from datetime import datetime
 
-have_ndiff = True
-try:
-    from ndiff import Scan
-except ImportError:
-    have_ndiff = False
 have_pytags = True
 try:
     from pytags.etags import EtagFile
@@ -115,10 +110,15 @@ class Ndoc(callbacks.Plugin):
         self.ndir = self.registryValue('nmapDir')
         self.nbin = self.registryValue('nmapBin')
         self.nsrc = self.registryValue('nmapSrc')
+        sys.path.append(os.path.join(self.nsrc,'ndiff'))
+        from ndiff import Scan
+        self.Scan = Scan
         sys.path.append(os.path.join(self.nsrc, 'zenmap'))
         from zenmapCore.ScriptMetadata import ScriptMetadata, get_script_entries
         from zenmapCore.NmapCommand import NmapCommand
+        self.NmapCommand = NmapCommand
         from zenmapCore.NmapOptions import NmapOptions
+        self.NmapOptions = NmapOptions
         from zenmapCore.UmitConf import PathsConfig
         paths = PathsConfig()
         paths.set_nmap_command_path(self.nbin)
@@ -363,9 +363,6 @@ class Ndoc(callbacks.Plugin):
         """<target>
 
         Returns the output of whois-ip for <target>."""
-        if not have_ndiff:
-            irc.reply("I couldn't load Ndiff, sorry.")
-            return
         if not reLooseTarget.match(target) or reRange.search(target):
             irc.reply("Single address only: No ranges or CIDR, sorry")
             return
@@ -390,7 +387,7 @@ class Ndoc(callbacks.Plugin):
         nmap_proc.command_process.wait()
         stderr.close()
         nmap_proc.stdout_file.seek(0)
-        scan = Scan()
+        scan = self.Scan()
         scan.load(nmap_proc.stdout_file)
         try:
             host = scan.hosts[0]
@@ -415,9 +412,6 @@ class Ndoc(callbacks.Plugin):
         """<target>
 
         Returns the output of address-info.nse for <target>."""
-        if not have_ndiff:
-            irc.reply("I couldn't load Ndiff, sorry.")
-            return
         if not reLooseTarget.match(target) or reRange.search(target):
             irc.reply("Single address only: No ranges or CIDR, sorry")
             return
@@ -441,7 +435,7 @@ class Ndoc(callbacks.Plugin):
         nmap_proc.command_process.wait()
         stderr.close()
         nmap_proc.stdout_file.seek(0)
-        scan = Scan()
+        scan = self.Scan()
         scan.load(nmap_proc.stdout_file)
         try:
             host = scan.hosts[0]
