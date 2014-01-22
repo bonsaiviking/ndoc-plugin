@@ -453,19 +453,23 @@ class Ndoc(callbacks.Plugin):
         irc.replies([host.format_name()] + sr.output.split("\n"))
     ipv6 = wrap(ipv6, ['anything'])
 
-    def define(self, irc, msg, args, tag):
-        """<tag>
+    def define(self, irc, msg, args, tag, index):
+        """<tag> [<index>]
 
-        Returns a definition of <tag> from Nmap's source code, using etags."""
+        Returns up to 3 definitions of <tag> from Nmap's source code, using etags. With <index>, starts from definition <index>."""
         if not have_pytags:
             irc.reply("I couldn't load pytags, sorry.")
             return
         if tag not in self.tags.tags:
             irc.reply("No definition found.")
             return
-        for t in self.tags.tags[tag]:
-            irc.reply("%s:%s: %s" %(t.file, t.line, t.text) )
-    define = wrap(define, ['anything'])
+        tags = self.tags.tags[tag]
+        if not index:
+            index = 0
+        irc.reply("Definitions %d-%d/%d for %s:" % (index, index+3, len(tags), tag))
+        for t in tags[index:index+3]:
+            irc.reply("%s:%s: %s" % (t.file, t.line, t.text) )
+    define = wrap(define, ['anything', optional('int')])
 
     def err(self, irc, msg, args, error):
         """<error>
