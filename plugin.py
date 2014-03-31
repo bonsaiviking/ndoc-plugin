@@ -466,8 +466,8 @@ class Ndoc(callbacks.Plugin):
         tags = self.tags.tags[tag]
         if not index:
             index = 0
-        irc.reply("Definitions %d-%d/%d for %s:" % (index, index+3, len(tags), tag))
-        for t in tags[index:index+3]:
+        irc.reply("Definitions %d-%d/%d for %s:" % (index, min(index+2, len(tags)), len(tags), tag))
+        for t in tags[index-1:index+2]:
             irc.reply("%s:%s: %s" % (t.file, t.line, t.text) )
     define = wrap(define, ['anything', optional('int')])
 
