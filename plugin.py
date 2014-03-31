@@ -333,9 +333,9 @@ class Ndoc(callbacks.Plugin):
     expand = wrap(expand, ['text'])
 
     def opt(self, irc, msg, args, index, find):
-        """<find>
+        """[<index>] <find>
 
-        Searches Nmap's quick-help options summary for <find>."""
+        Searches Nmap's quick-help options summary for <find>. If <index> is a number, return results from that offset."""
         if len(find) < 2:
             irc.reply("Search term must be at least 2 characters")
             return
