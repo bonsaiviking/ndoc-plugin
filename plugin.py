@@ -332,13 +332,15 @@ class Ndoc(callbacks.Plugin):
         irc.replies(map(lambda f: reScript.search(f).group("fname"), result.script_filenames) or ["No scripts match"])
     expand = wrap(expand, ['text'])
 
-    def opt(self, irc, msg, args, find):
+    def opt(self, irc, msg, args, index, find):
         """<find>
 
         Searches Nmap's quick-help options summary for <find>."""
         if len(find) < 2:
             irc.reply("Search term must be at least 2 characters")
             return
+        if index is None:
+            index = 0
         if find[0] == "-" and find[1] != "-": # "-X" and not "--long"
             find = " %s" %(find) # avoid matching "--script" when "-s" asked for
         ops = self.NmapOptions()
@@ -355,9 +357,12 @@ class Ndoc(callbacks.Plugin):
         nmap_proc.command_process.wait()
         stderr.close()
         nmap_proc.stdout_file.seek(0)
-        for line in (filter(lambda l: l.find(find)!= -1, nmap_proc.stdout_file) or ["Nothing found"]):
+        results = (filter(lambda l: l.find(find)!= -1, nmap_proc.stdout_file) or ["Nothing found"])
+        if len(results) > 5:
+            irc.reply("Truncating to 5 results. Be more specific, or use 'index' to see more results")
+        for line in results[index:index+5]:
             irc.reply(line.rstrip())
-    opt = wrap(opt, ['text'])
+    opt = wrap(opt, [optional('int'),'text'])
 
     def whois(self, irc, msg, args, target):
         """<target>
