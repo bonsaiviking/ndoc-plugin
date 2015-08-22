@@ -44,6 +44,7 @@ import urllib
 import glob
 import string
 from datetime import datetime
+import random
 
 have_pytags = True
 try:
@@ -211,6 +212,15 @@ class Ndoc(callbacks.Plugin):
         Returns the list of NSE libraries."""
         irc.replies(self.libs)
     liblist = wrap(liblist, [])
+
+    def rand(self, irc, msg, args):
+        """
+
+        Returns the description and URL of a random script."""
+        script = random.choice(self.meta.keys())
+        irc.reply(self.meta[script].url)
+        irc.reply(self.meta[script].description.replace("\n"," "))
+    rand = wrap(random, [])
 
     def url(self, irc, msg, args, name):
         """<name>
