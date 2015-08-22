@@ -213,14 +213,14 @@ class Ndoc(callbacks.Plugin):
         irc.replies(self.libs)
     liblist = wrap(liblist, [])
 
-    def random(self, irc, msg, args):
+    def rand(self, irc, msg, args):
         """
 
         Returns the description and URL of a random script."""
         script = random.choice(self.meta.keys())
         irc.reply(self.meta[script].url)
         irc.reply(self.meta[script].description.replace("\n"," "))
-    random = wrap(random, [])
+    rand = wrap(random, [])
 
     def url(self, irc, msg, args, name):
         """<name>
