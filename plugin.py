@@ -220,7 +220,7 @@ class Ndoc(callbacks.Plugin):
         script = random.choice(self.meta.keys())
         irc.reply(self.meta[script].url)
         irc.reply(self.meta[script].description.replace("\n"," "))
-    rand = wrap(random, [])
+    rand = wrap(rand, [])
 
     def url(self, irc, msg, args, name):
         """<name>
