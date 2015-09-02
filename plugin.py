@@ -577,6 +577,13 @@ class Ndoc(callbacks.Plugin):
         irc.reply("I updated to r{} at {} UTC".format(self.svnrev, self.lastload))
     rev = wrap(rev, [])
 
+    def Nhelp(self, irc, msg, args, command):
+        """
+
+        Correct usage of the bot."""
+        irc.reply("My name is Nhelp, but that's not a command. Did you mean '?{}'".format(command))
+    Nhelp = wrap(Nhelp, ['text'])
+
 Class = Ndoc
 
 
