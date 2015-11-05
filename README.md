@@ -13,5 +13,5 @@ Requirements
           path. Just link it in by hand.
 * [pytags](https://github.com/bonsaiviking/py-tags) - This library is
           work-in-progress, but it parses ctags and etags files.
-* [Nmap](http://nmap.org/) - Obviously. Ndoc is most useful when you have the
+* [Nmap](https://nmap.org/) - Obviously. Ndoc is most useful when you have the
           source code and a full install.
