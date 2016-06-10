@@ -199,7 +199,7 @@ class Ndoc(callbacks.Plugin):
         if m:
             script = "%s.nse" %( m.group('fname') )
             try:
-                irc.reply(self.meta[script].author)
+                irc.replies(self.meta[script].author)
             except KeyError:
                 irc.reply("Script not found")
         else:
@@ -557,7 +557,8 @@ class Ndoc(callbacks.Plugin):
         uniq_cat = {}
         uniq_author = {}
         for script in self.meta.itervalues():
-            uniq_author[script.author] = 1
+            for author in script.author:
+                uniq_author[author] = 1
             for cat in script.categories:
                 uniq_cat[cat] = 1
 
