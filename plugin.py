@@ -56,7 +56,7 @@ except ImportError:
 def nsedoc_filter (nsedoc):
     """Filter NSEdoc to remove <code> tags and consolidate whitespace."""
     stripped = re.sub(r'</?code>', ' ', nsedoc)
-    return re.sub(r'\s+', ' ', stripped)
+    return re.sub(r'\s+', ' ', stripped, flags=re.M)
 
 ### Copied from Nmap 6.25 source: zenmap/zenmapGUI/ScriptInterface.py
 class ScriptHelpXMLContentHandler (xml.sax.handler.ContentHandler):
@@ -317,7 +317,7 @@ class Ndoc(callbacks.Plugin):
             if arg:
                 for a in args:
                     if a[0] == arg:
-                        irc.reply(re.sub(r'\s+', ' ', (a[1] or "No description"), flags=re.M))
+                        irc.reply(nsedoc_filter(a[1] or "No description"))
             else:
                 irc.replies(a[0] for a in args)
         else:
