@@ -157,15 +157,17 @@ class Ndoc(callbacks.Plugin):
                             self.errs[errstr].append(n)
                         else:
                             self.errs[errstr] = [n]
-        #TODO: try-catch
-        luaman = open(self.registryValue('luaManualTerms'),"r")
-        self.luaterms = {}
-        for term in map(string.strip, luaman):
-            t = term.split("-")
-            if t[0] == "pdf":
-                self.luaterms[t[1]] = term
-            else:
-                self.luaterms[term] = term
+        try:
+            luaman = open(self.registryValue('luaManualTerms'),"r")
+            self.luaterms = {}
+            for term in map(string.strip, luaman):
+                t = term.split("-")
+                if t[0] == "pdf":
+                    self.luaterms[t[1]] = term
+                else:
+                    self.luaterms[term] = term
+        except IOError as e:
+            self.luaterms = False
         luaman.close()
         svnproc = Popen("svn info | awk '$1==\"Revision:\"{print $2}'", cwd=self.nsrc, shell=True, stdout=PIPE)
         self.svnrev, _ = svnproc.communicate()
@@ -176,6 +178,10 @@ class Ndoc(callbacks.Plugin):
         """<term>
 
         Returns a link to the Lua 5.3 manual section for <term>."""
+        if not self.luaterms:
+            irc.reply("Failed to load Lua 5.3 terms. http://www.lua.org/manual/5.3/manual.html")
+            return
+
         if term in self.luaterms:
             irc.reply("http://www.lua.org/manual/5.3/manual.html#{0}".format(self.luaterms[term]))
         else:
