@@ -52,6 +52,12 @@ try:
 except ImportError:
     have_pytags = False
 
+
+def nsedoc_filter (nsedoc):
+    """Filter NSEdoc to remove <code> tags and consolidate whitespace."""
+    stripped = re.sub(r'</?code>', ' ', nsedoc)
+    return re.sub(r'\s+', ' ', stripped)
+
 ### Copied from Nmap 6.25 source: zenmap/zenmapGUI/ScriptInterface.py
 class ScriptHelpXMLContentHandler (xml.sax.handler.ContentHandler):
     """A very simple parser for --script-help XML output. This could extract
@@ -184,7 +190,7 @@ class Ndoc(callbacks.Plugin):
         if m:
             script = "%s.nse" %( m.group('fname') )
             try:
-                irc.reply(self.meta[script].description.replace("\n"," "))
+                irc.reply(nsedoc_filter(self.meta[script].description))
             except KeyError:
                 irc.reply("Script not found")
         else:
@@ -219,7 +225,7 @@ class Ndoc(callbacks.Plugin):
         Returns the description and URL of a random script."""
         script = random.choice(self.meta.keys())
         irc.reply(self.meta[script].url)
-        irc.reply(self.meta[script].description.replace("\n"," "))
+        irc.reply(nsedoc_filter(self.meta[script].description))
     rand = wrap(rand, [])
 
     def url(self, irc, msg, args, name):
