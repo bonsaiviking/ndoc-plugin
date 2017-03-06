@@ -175,11 +175,11 @@ class Ndoc(callbacks.Plugin):
     def luaterm(self, irc, msg, args, term):
         """<term>
 
-        Returns a link to the Lua 5.2 manual section for <term>."""
+        Returns a link to the Lua 5.3 manual section for <term>."""
         if term in self.luaterms:
-            irc.reply("http://www.lua.org/manual/5.2/manual.html#{0}".format(self.luaterms[term]))
+            irc.reply("http://www.lua.org/manual/5.3/manual.html#{0}".format(self.luaterms[term]))
         else:
-            irc.reply("No such term in Lua 5.2 manual: http://www.lua.org/manual/5.2/manual.html")
+            irc.reply("No such term in Lua 5.3 manual: http://www.lua.org/manual/5.3/manual.html")
     luaterm = wrap(luaterm, ['anything'])
 
     def description(self, irc, msg, args, script):
